@@ -4,6 +4,7 @@ import requests
 import random
 import hashlib
 import sys
+import time
 from datetime import datetime, timedelta
 from typing import List, Dict
 
@@ -18,7 +19,10 @@ SKIP_FEISHU = os.environ.get("SKIP_FEISHU", "false").lower() == "true"  # 跳过
 FORCE_REGENERATE = os.environ.get("FORCE_REGENERATE", "false").lower() == "true"  # 强制重新生成
 
 MINIMAX_API_URL = "https://api.minimaxi.com/v1/text/chatcompletion_v2"
-MINIMAX_MODEL = "MiniMax-M2.7"
+MINIMAX_MODELS = ["MiniMax-M2.7-highspeed", "MiniMax-M2.5-highspeed"]
+MINIMAX_TIMEOUT = (20, 180)
+MINIMAX_MAX_COMPLETION_TOKENS = 1800
+MINIMAX_RETRY_DELAY_SECONDS = 3
 FEISHU_CHUNK_SIZE = 2500
 
 # 数据文件
@@ -322,61 +326,75 @@ def generate_ultra_high_quality_prompt(pet_name: str) -> str:
         "Content-Type": "application/json"
     }
 
-    payload = {
-        "model": MINIMAX_MODEL,
-        "messages": [
-            {"role": "system", "name": "Prompt Architect", "content": system_prompt},
-            {"role": "user", "name": "用户", "content": user_prompt}
-        ],
-        "temperature": 0.85,  # 稍微降低随机性，提高质量稳定性
-        "top_p": 0.92,
-        "stream": False
-    }
+    last_error = None
 
-    try:
-        print("🤖 正在调用Minimax生成高质量Prompt...")
-        response = requests.post(
-            MINIMAX_API_URL,
-            json=payload,
-            headers=headers,
-            timeout=90
-        )
-        response.raise_for_status()
-        data = response.json()
+    for index, model_name in enumerate(MINIMAX_MODELS, start=1):
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "name": "Prompt Architect", "content": system_prompt},
+                {"role": "user", "name": "用户", "content": user_prompt}
+            ],
+            "temperature": 0.7,
+            "top_p": 0.9,
+            "max_completion_tokens": MINIMAX_MAX_COMPLETION_TOKENS,
+            "stream": False
+        }
 
-        base_resp = data.get("base_resp") if isinstance(data, dict) else None
-        if isinstance(base_resp, dict) and base_resp.get("status_code") not in (None, 0):
-            raise ValueError(
-                f"MiniMax业务错误：status_code={base_resp.get('status_code')}, "
-                f"status_msg={base_resp.get('status_msg', '')}"
+        try:
+            print(f"🤖 正在调用Minimax生成高质量Prompt... model={model_name}")
+            response = requests.post(
+                MINIMAX_API_URL,
+                json=payload,
+                headers=headers,
+                timeout=MINIMAX_TIMEOUT
             )
+            response.raise_for_status()
+            data = response.json()
 
-        # 兼容不同返回格式，优先提取非空文本
-        generated_prompt = ""
-        if isinstance(data, dict):
-            generated_prompt = (data.get("reply") or "").strip()
+            base_resp = data.get("base_resp") if isinstance(data, dict) else None
+            if isinstance(base_resp, dict) and base_resp.get("status_code") not in (None, 0):
+                raise ValueError(
+                    f"MiniMax业务错误：status_code={base_resp.get('status_code')}, "
+                    f"status_msg={base_resp.get('status_msg', '')}"
+                )
+
+            # 兼容不同返回格式，优先提取非空文本
+            generated_prompt = ""
+            if isinstance(data, dict):
+                generated_prompt = (data.get("reply") or "").strip()
+                if not generated_prompt:
+                    choices = data.get("choices") or []
+                    if choices and isinstance(choices, list):
+                        first = choices[0] if isinstance(choices[0], dict) else {}
+                        message = first.get("message") if isinstance(first, dict) else {}
+                        if isinstance(message, dict):
+                            generated_prompt = (message.get("content") or "").strip()
+                        if not generated_prompt:
+                            generated_prompt = (first.get("text") or "").strip() if isinstance(first, dict) else ""
+                if not generated_prompt:
+                    generated_prompt = (data.get("output_text") or "").strip()
+
             if not generated_prompt:
-                choices = data.get("choices") or []
-                if choices and isinstance(choices, list):
-                    first = choices[0] if isinstance(choices[0], dict) else {}
-                    message = first.get("message") if isinstance(first, dict) else {}
-                    if isinstance(message, dict):
-                        generated_prompt = (message.get("content") or "").strip()
-                    if not generated_prompt:
-                        generated_prompt = (first.get("text") or "").strip() if isinstance(first, dict) else ""
-            if not generated_prompt:
-                generated_prompt = (data.get("output_text") or "").strip()
+                preview = str(data)[:500]
+                raise ValueError(f"模型返回为空，响应预览：{preview}")
 
-        if not generated_prompt:
-            preview = str(data)[:500]
-            raise ValueError(f"模型返回为空，响应预览：{preview}")
+            print(f"✅ Prompt生成成功，模型：{model_name}，长度：{len(generated_prompt)} 字符")
+            return generated_prompt
+        except requests.exceptions.ReadTimeout as e:
+            last_error = f"模型 {model_name} 响应超时：{e}"
+            print(f"⚠️ {last_error}")
+        except Exception as e:
+            last_error = f"模型 {model_name} 调用失败：{e}"
+            print(f"⚠️ {last_error}")
 
-        print(f"✅ Prompt生成成功，长度：{len(generated_prompt)} 字符")
-        return generated_prompt
-    except Exception as e:
-        error_msg = f"❌ Minimax调用失败：{str(e)}"
-        print(error_msg)
-        return error_msg
+        if index < len(MINIMAX_MODELS):
+            print(f"🔁 {MINIMAX_RETRY_DELAY_SECONDS} 秒后切换到下一个模型重试...")
+            time.sleep(MINIMAX_RETRY_DELAY_SECONDS)
+
+    error_msg = f"❌ Minimax调用失败：{last_error}"
+    print(error_msg)
+    return error_msg
 
 
 # ===================== 发送到飞书 =====================
