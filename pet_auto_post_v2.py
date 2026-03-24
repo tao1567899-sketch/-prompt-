@@ -282,12 +282,10 @@ def generate_ultra_high_quality_prompt(pet_name: str) -> str:
 ## 🎨 AI图片生成指令（2组）
 
 ### 封面主图提示词：
-"""
 超高清写实照片，可爱的{pet_name}特写，毛发纤毫毕现，温柔的眼神看向镜头，
 柔和自然光，浅景深背景虚化，专业单反相机拍摄质感，
 暖色调，治愈系氛围，16:9横版构图，8K分辨率
 关键词：{pet_name}, pet photography, adorable, soft lighting, bokeh, hyper realistic
-"""
 
 ### 内容配图提示词（3-5张）：
 1. 幼犬/幼猫萌照："刚出生的{pet_name}宝宝，软萌可爱，浅色背景"
