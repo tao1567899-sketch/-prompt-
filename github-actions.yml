@@ -5,13 +5,23 @@ on:
   schedule:
     - cron: '0 2 * * *'
   
-  # 支持手动触发
+  # 支持手动触发（在Actions标签页可以看到Run workflow按钮）
   workflow_dispatch:
     inputs:
       specific_pet:
         description: '指定生成的宠物品种（留空则自动选择）'
         required: false
-        type: string
+        default: ''
+      skip_feishu:
+        description: '跳过飞书推送（测试用）'
+        required: false
+        type: boolean
+        default: false
+      force_regenerate:
+        description: '强制重新生成（忽略30天限制）'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   generate-content:
@@ -43,11 +53,14 @@ jobs:
           MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
           SPECIFIC_PET: ${{ github.event.inputs.specific_pet }}
+          SKIP_FEISHU: ${{ github.event.inputs.skip_feishu }}
+          FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
         run: |
-          if [ -n "$SPECIFIC_PET" ]; then
-            echo "手动指定品种: $SPECIFIC_PET"
-            # 这里可以修改脚本支持命令行参数
-          fi
+          echo "=== 运行参数 ==="
+          echo "指定品种: ${SPECIFIC_PET:-自动选择}"
+          echo "跳过飞书: ${SKIP_FEISHU:-false}"
+          echo "强制重生成: ${FORCE_REGENERATE:-false}"
+          echo "================"
           python pet_auto_post_v2.py
       
       # 5. 提交历史记录到仓库
