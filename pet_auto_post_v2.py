@@ -11,6 +11,11 @@ from typing import List, Dict
 MINIMAX_API_KEY = os.environ.get("MINIMAX_API_KEY", "")
 FEISHU_WEBHOOK = os.environ.get("FEISHU_WEBHOOK", "")
 
+# GitHub Actions 手动触发参数
+SPECIFIC_PET = os.environ.get("SPECIFIC_PET", "")  # 指定生成的宠物品种
+SKIP_FEISHU = os.environ.get("SKIP_FEISHU", "false").lower() == "true"  # 跳过飞书推送
+FORCE_REGENERATE = os.environ.get("FORCE_REGENERATE", "false").lower() == "true"  # 强制重新生成
+
 MINIMAX_API_URL = "https://api.minimax.chat/v1/text/chatcompletion_pro"
 MINIMAX_MODEL = "minimax-2.7"
 
@@ -420,11 +425,43 @@ def main():
     if not FEISHU_WEBHOOK:
         print("⚠️ 警告：未设置 FEISHU_WEBHOOK，将无法推送消息")
     
+    # 显示运行模式
+    if SPECIFIC_PET:
+        print(f"🎯 手动模式：指定品种 [{SPECIFIC_PET}]")
+    if SKIP_FEISHU:
+        print("⏭️  已跳过飞书推送（测试模式）")
+    if FORCE_REGENERATE:
+        print("⚡ 强制重新生成模式（忽略30天限制）")
+    
     # 初始化管理器
     manager = PetContentManager()
     
     # 智能选择今日宠物
-    today_pet = manager.select_today_pet()
+    if SPECIFIC_PET:
+        # 手动指定品种
+        if SPECIFIC_PET in manager.pet_database:
+            today_pet = SPECIFIC_PET
+            print(f"✅ 使用手动指定的品种：{today_pet}")
+        else:
+            print(f"⚠️ 品种 [{SPECIFIC_PET}] 不在数据库中，将添加并使用")
+            manager.pet_database.append(SPECIFIC_PET)
+            manager._save_pet_database()
+            today_pet = SPECIFIC_PET
+    else:
+        # 自动选择
+        today_pet = manager.select_today_pet()
+    
+    # 检查是否需要重新生成
+    if not FORCE_REGENERATE and manager.is_recently_generated(today_pet, days=30):
+        print(f"ℹ️ 品种 [{today_pet}] 在30天内已生成过")
+        print("💡 提示：如需强制重新生成，请在 GitHub Actions 手动触发时勾选 'force_regenerate'")
+        
+        # 询问是否继续（仅在非自动模式下）
+        if SPECIFIC_PET or FORCE_REGENERATE:
+            print("⏩ 继续生成...")
+        else:
+            print("⏭️ 跳过本次生成")
+            return
     
     # 生成高质量Prompt
     final_prompt = generate_ultra_high_quality_prompt(today_pet)
@@ -442,8 +479,10 @@ def main():
     }
     
     # 发送到飞书
-    if FEISHU_WEBHOOK:
+    if FEISHU_WEBHOOK and not SKIP_FEISHU:
         send_to_feishu(today_pet, final_prompt, stats)
+    elif SKIP_FEISHU:
+        print("⏭️ 已跳过飞书推送（测试模式）")
     
     # 输出到控制台
     print("\n" + "=" * 60)
