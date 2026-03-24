@@ -1,0 +1,111 @@
+name: 宠物自媒体每日创作
+
+on:
+  # 定时任务：每天北京时间上午10点（UTC+8 = UTC+2）
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # 支持手动触发（在Actions标签页可以看到Run workflow按钮）
+  workflow_dispatch:
+    inputs:
+      specific_pet:
+        description: '指定生成的宠物品种（留空则自动选择）'
+        required: false
+        default: ''
+      skip_feishu:
+        description: '跳过飞书推送（测试用）'
+        required: false
+        type: boolean
+        default: false
+      force_regenerate:
+        description: '强制重新生成（忽略30天限制）'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  generate-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      # 2. 设置Python环境
+      - name: 设置Python环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      
+      # 3. 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      # 4. 运行生成脚本
+      - name: 生成宠物内容Prompt
+        env:
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          SPECIFIC_PET: ${{ github.event.inputs.specific_pet }}
+          SKIP_FEISHU: ${{ github.event.inputs.skip_feishu }}
+          FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
+        run: |
+          echo "=== 运行参数 ==="
+          echo "指定品种: ${SPECIFIC_PET:-自动选择}"
+          echo "跳过飞书: ${SKIP_FEISHU:-false}"
+          echo "强制重生成: ${FORCE_REGENERATE:-false}"
+          echo "================"
+          python pet_auto_post_v2.py
+      
+      # 5. 提交历史记录到仓库
+      - name: 提交生成记录
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 添加所有生成的文件
+          git add sent_pets_history.json
+          git add pet_database.json
+          git add prompt_*.txt
+          
+          # 检查是否有变更
+          if git diff --staged --quiet; then
+            echo "没有新的变更"
+          else
+            git commit -m "🤖 自动生成: $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
+      
+      # 6. 生成汇总报告（可选）
+      - name: 生成运行报告
+        if: always()
+        run: |
+          echo "## 📊 运行报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **运行时间**: $(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "sent_pets_history.json" ]; then
+            TOTAL=$(python -c "import json; print(len(json.load(open('sent_pets_history.json'))))")
+            echo "- **累计生成**: ${TOTAL} 次" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f "pet_database.json" ]; then
+            PETS=$(python -c "import json; print(len(json.load(open('pet_database.json'))['pets']))")
+            echo "- **宠物品种**: ${PETS} 个" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ 任务执行完成！" >> $GITHUB_STEP_SUMMARY
+
+      # 7. 错误通知（可选）
+      - name: 发送错误通知
+        if: failure()
+        run: |
+          echo "任务执行失败，请检查日志"
+          # 这里可以接入其他通知渠道（邮件、Telegram等）
