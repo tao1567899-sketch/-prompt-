@@ -1,0 +1,109 @@
+【文案Prompt】
+
+请为波斯猫创作一套面向小红书、知乎、公众号三平台的高转化种草内容，风格必须生活化、有网感，像朋友聊天一样真诚接地气，避免广告腔和假大空话术。
+
+**内容调性要求：**
+用真实案例和数据说话，包含具体场景、具体问题、具体建议。想象你在和一位想养猫但还在犹豫的朋友聊天，你的每一句话都要让对方感觉"这人说的话太实在了""终于有人把实话告诉我了"。
+
+**必须输出的内容模块：**
+
+**一、创作背景**
+从波斯猫的市场热度、养猫人群画像入手，分析为什么这个品种最近在小红书和知乎上搜索量上涨，结合"云吸猫"文化兴起的大背景，说明为什么现在做这个选题能爆。
+
+**二、小红书爆款标题（5选1）**
+每个标题必须包含数字、情绪词、悬念点，字数控制在20字以内，贴近小红书年轻用户的搜索习惯。例如用"XX万"的阅读量暗示、"天呐""救命"的感叹词、"但""真相"的转折词制造冲突感。
+
+**三、开头钩子（3选1）**
+- 场景型：以一个养猫日常中的"社死瞬间"或"崩溃时刻"开篇
+- 数据型：用一个反常识的数据或结论打破认知
+- 对话型：模拟私信咨询场景，让读者代入提问者身份
+
+**四、正文核心内容（1500-2000字，分5大模块）**
+
+**模块1：品种真相与避坑指南（300-400字）**
+- 波斯猫的真实市场价格区间（宠物级/繁育级/赛级）
+- 市面上常见的"坑"：星期猫、串串冒充、星期猫后院猫舍识别
+- 新手最容易踩的3个认知误区
+- 必须问卖家的5个问题清单
+- 附上真实交易纠纷案例
+
+**模块2：性格特点与真实体验（300-400字）**
+- 打破"安静乖巧"的刻板印象，说说波斯猫的"另一面"
+- 5个性格关键词+每个关键词对应的真实生活场景
+- 波斯猫vs英短/美短/布偶的性格对比表格
+- 不同家庭场景适配度分析（独居/有小孩/多宠家庭）
+
+**模块3：科学饲养攻略（400-500字）**
+- 饮食避坑：天然粮vs商品粮辨别、不同年龄段喂食量
+- 毛发护理全流程：每日梳毛步骤图解、洗护产品推荐
+- 环境要求：温度/湿度/空间大小
+- 必备用品清单+可选用品清单（附预算区间）
+- 常见健康问题预警信号（泪痕、呼吸道、皮肤病）
+
+**模块4：养宠成本大公开（300-400字）**
+- 一次性成本：购猫费用+用品采购（分低中高三档预算）
+- 月均开销：食品+护理+医疗备用金
+- 第一年总花费预估（含疫苗、绝育、体检）
+- 用表格呈现：费用项目/最低预算/建议预算/避坑提示
+
+**模块5：高频问答环节（10个问题）**
+涵盖新手最高频的困惑：
+1. 波斯猫掉毛严重吗？
+2. 波斯猫需要每天洗脸吗？
+3. 波斯猫寿命一般多长？
+4. 波斯猫容易有遗传病吗？
+5. 波斯猫适合新手养吗？
+6. 波斯猫一天吃多少？
+7. 波斯猫需要多久洗一次澡？
+8. 波斯猫会不会很粘人？
+9. 波斯猫多少钱一只才不算被坑？
+10. 波斯猫和异国短毛猫怎么选？
+
+每个问题用"问+答+原因解释"的格式，答案控制在80-120字，必须给出明确的行动建议。
+
+**五、互动引导话术**
+在正文结尾设计：
+- 小红书专属：引导评论的开放式问题（至少3条）
+- 知乎专属：引导点赞收藏的结尾话术
+- 公众号专属：引导转发朋友圈的分享话术
+- 私信自动回复话术模板（针对"求推荐""多少钱"类私信）
+
+**六、小红书标签（15个）**
+按热度排序，涵盖品种标签、场景标签、情感标签，例如：#波斯猫 #长毛猫 #新手养猫 #养猫攻略 #铲屎官日记 #猫咪日常 #猫奴必看 #宠物推荐 #养猫成本 #猫咪品种推荐 #布偶猫 #养猫避坑 #猫咪掉毛 #猫咪泪痕 #宠物日记
+
+**七、知乎专属优化**
+- 优化开头：知乎用户更看重"专业性"，增加引用数据来源
+- 增加"编辑推荐"触发词：实测、测评、对比、避坑
+- 结构优化：每个模块加二级标题，便于用户截图保存
+- 增加"长尾关键词"布局：新手养猫注意什么/波斯猫好养吗/波斯猫多少钱
+
+**八、公众号排版建议**
+- 标题样式：主标题+副标题，副标题体现痛点
+- 段落格式：每段不超过3行，重点语句加粗
+- 插入元素：对比表格、分点列表、emoji装饰
+- 阅读体验：适合收藏的"太长看不完"内容，做成可跳转目录
+
+【图片生成Prompt】
+
+请为【波斯猫】输出 3 组可直接用于图片模型的写实风格图片生成 Prompt。
+
+通用要求：
+- 所有图片都必须是写实摄影风格
+- 所有画面中禁止出现任何文字、字母、logo、水印、贴纸、海报字
+- 画面干净、自然、温暖、真实，有宠物摄影质感
+- 每组都必须包含：图X用途、中文提示词、English prompt、Negative prompt
+
+图1用途：封面图
+中文提示词：超高清写实照片，可爱的波斯猫幼宠特写，毛发纤毫毕现，温柔眼神看向镜头，柔和自然光，浅景深背景虚化，专业摄影质感，暖色调，治愈氛围，16:9横版构图，画面干净，无任何文字、字母、logo、水印、贴纸
+English prompt: ultra realistic pet photography, cute young 波斯猫, close-up portrait, detailed fur, gentle eye contact, soft natural light, shallow depth of field, warm tone, healing atmosphere, clean background, 16:9 composition, no text, no letters, no logo, no watermark, no sticker
+Negative prompt: text, letters, logo, watermark, sticker, blurry, low resolution, distorted anatomy, duplicate limbs, messy background, oversaturated
+
+图2用途：正文配图-日常互动
+中文提示词：波斯猫幼宠和主人在客厅玩耍，温馨家庭氛围，抓拍感，写实摄影风格，自然光线，构图干净，生活化场景，画面中无任何文字元素
+English prompt: realistic lifestyle pet photography, young 波斯猫 playing with owner in living room, warm family atmosphere, candid shot, natural lighting, clean composition, cozy home scene, no text, no letters, no logo, no watermark
+Negative prompt: text, letters, logo, watermark, poster text, blurry, low resolution, distorted hands, distorted paws, duplicate limbs, cluttered scene
+
+图3用途：正文配图-护理训练
+中文提示词：波斯猫幼宠在接受喂食、基础训练或健康检查，生活化真实场景，写实摄影风格，光线柔和，主体清晰，画面干净，无任何文字、字母、logo、水印
+English prompt: realistic pet care photography, young 波斯猫 during feeding or basic training or health check, natural lifestyle scene, soft lighting, sharp subject, clean frame, no text, no letters, no logo, no watermark
+Negative prompt: text, letters, logo, watermark, sticker, blurry, low resolution, distorted anatomy, duplicate limbs, messy background, artificial props overload
